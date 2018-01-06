@@ -1,0 +1,32 @@
+#!/bin/bash
+
+let "dakka=60*$1"
+
+# Kill rtcwake if already running
+sudo killall rtcwake
+
+echo "To cancel, press Ctrl+c within the next 7 seconds."
+sleep 7
+# Set RTC wakeup time
+sudo rtcwake -u -s $dakka -m mem &
+
+# Set volume level and (just in case) unmute system
+amixer -c 0 set Master $2% unmute
+amixer -c 0 set PCM $2% unmute
+
+# echo "Good morning"
+
+# Open MPlayer (mplayer + path to your audio/video file)
+
+mplayer "$3"
+
+# Unload rtcwake if it's running, otherwise next time computer won't wake up from sleep
+SERVICE='rtcwake'
+if ps ax | grep -v grep | grep $SERVICE > /dev/null
+then
+    echo "$SERVICE running, killing process..."
+    sudo killall rtcwake
+else
+    echo "$SERVICE is not running, no action taken."
+fi
+
